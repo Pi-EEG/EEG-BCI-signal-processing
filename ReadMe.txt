@@ -1,1 +1,1 @@
-EEG BCI signal processing by Python
+Real-time EEG BCI signal processing by Python
