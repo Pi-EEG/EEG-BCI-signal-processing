@@ -10,6 +10,11 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import matplotlib.pyplot as plt
 import random
 
+
+from PyQt5.Qt import *
+import sys
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -57,7 +62,7 @@ class second_window(QWidget):
         layout.addWidget(self.canvas1)
         self.setLayout(layout)
 
-       
+              
     def clickMethod(self):
         print('Clicked Pyqt button')
         
@@ -74,6 +79,25 @@ class second_window(QWidget):
 
         self.canvas.draw()
         self.canvas1.draw()
+
+
+        self.le_num1 = QLineEdit()
+        self.pb_num1 = QPushButton('...')
+        self.pb_num1.clicked.connect(self.show_dialog_num1)       
+        layout = QGridLayout()
+        self.setLayout(layout)
+
+        layout.addWidget(QLabel('num1'), 0, 0)
+        layout.addWidget(self.le_num1, 0, 1)
+        layout.addWidget(self.pb_num1, 0, 2)
+        
+
+
+
+    def show_dialog_num1(self):
+        value, ok = QInputDialog.getInt(self, 'Input dialog', 'Enter your num1:')
+        print (value)
+
         
        # mainWin.show()
        # seconWin.close()
