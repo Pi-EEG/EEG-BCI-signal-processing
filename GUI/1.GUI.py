@@ -36,15 +36,19 @@ class second_window(QWidget):
         print ("start")       
         QWidget.__init__(self)
 
-        self.setMinimumSize(QSize(400, 400))    
+        self.setMinimumSize(QSize(800, 800))    
         self.setWindowTitle("PyQt button example - pythonprogramminglanguage.com1") 
         
               
-        self.figure = plt.figure(figsize=(2, 2), dpi=100)        
-        self.figure1 = plt.figure(figsize=(2, 2), dpi=100)
+        self.figure = plt.figure(figsize=(10, 1), dpi=100)        
+        self.figure1 = plt.figure(figsize=(1, 1), dpi=100)
         
         self.canvas = FigureCanvas(self.figure)
+       # self.ax = self.figure.add_subplot(111, position=[0.15, 0.15, 0.75, 0.75])
+        self.figure.subplots_adjust(0.2, 0.2, 0.8, 0.8) 
         self.canvas1 = FigureCanvas(self.figure1)
+        self.figure1.subplots_adjust(0.2, 0.2, 0.8, 0.8) 
+        
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.toolbar1 = NavigationToolbar(self.canvas1, self)
         
@@ -60,8 +64,8 @@ class second_window(QWidget):
 
         layout.addWidget(self.toolbar1)
         layout.addWidget(self.canvas1)
-        self.setLayout(layout)
 
+        self.setLayout(layout)
               
     def clickMethod(self):
         print('Clicked Pyqt button')
@@ -76,11 +80,10 @@ class second_window(QWidget):
         
         ax.plot(data, '*-')
         ax1.plot(data1, '*-')
-
         self.canvas.draw()
         self.canvas1.draw()
-
-
+        
+# input data
         self.le_num1 = QLineEdit()
         self.pb_num1 = QPushButton('...')
         self.pb_num1.clicked.connect(self.show_dialog_num1)       
@@ -91,17 +94,12 @@ class second_window(QWidget):
         layout.addWidget(self.le_num1, 0, 1)
         layout.addWidget(self.pb_num1, 0, 2)
         
-
-
-
     def show_dialog_num1(self):
         value, ok = QInputDialog.getInt(self, 'Input dialog', 'Enter your num1:')
         print (value)
 
-        
        # mainWin.show()
-       # seconWin.close()
-    
+       # seconWin.close()  
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
