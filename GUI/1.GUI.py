@@ -61,19 +61,32 @@ class second_window(QWidget):
         pybutton.resize(100,32)
         
         layout = QVBoxLayout()
-
         layout.setContentsMargins(100,100,0,11)
-        layout.setGeometry(QRect(0, 0, 80, 68))
-
-         
+        layout.setGeometry(QRect(0, 0, 80, 68))         
         layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)    
-
         layout.addWidget(self.toolbar1)
         layout.addWidget(self.canvas1)
+        
 
-       # self.setLayout(layout)
-              
+       # 
+        self.le_num1 = QLineEdit()
+        self.le_num1.setFixedSize(10, 20) 
+        #self.le_num1.resize(135, 140)
+        self.pb_num1 = QPushButton('...')
+        self.pb_num1.setFixedSize(10, 20) 
+        #self.pb_num1.resize(135, 140)        
+        self.pb_num1.clicked.connect(self.show_dialog_num1)       
+
+        #layout1 = QGridLayout()        
+        layout.addWidget(QLabel('num1')) 
+        layout.addWidget(self.le_num1)
+        layout.addWidget(self.pb_num1)
+
+        self.setLayout(layout)
+        self.setLayout(layout)
+        
+        
     def clickMethod(self):
         print('Clicked Pyqt button')
         
@@ -91,24 +104,7 @@ class second_window(QWidget):
         self.canvas1.draw()
         
 # input data
-        self.le_num1 = QLineEdit()
-        self.le_num1.setFixedSize(10, 20) 
-        #self.le_num1.resize(135, 140)
-        self.pb_num1 = QPushButton('...')
-        self.pb_num1.setFixedSize(10, 20) 
-        #self.pb_num1.resize(135, 140)
 
-        
-        self.pb_num1.clicked.connect(self.show_dialog_num1)       
-        layout1 = QGridLayout()
-        
-
-        layout1.addWidget(QLabel('num1'), 10, 10)
- 
-        layout1.addWidget(self.le_num1, 0, 1)
-
-        layout1.addWidget(self.pb_num1, 0, 2)
-        self.setLayout(layout1)
     def show_dialog_num1(self):
         value, ok = QInputDialog.getInt(self, 'Input dialog', 'Enter your num1:')
         print (value)
