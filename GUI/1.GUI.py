@@ -14,7 +14,23 @@ import threading
 import time
 
 
-#global value
+import numpy as np
+import pandas as pd
+from scipy import signal
+import serial
+
+
+ComPort = serial.Serial('COM8') 
+ComPort.baudrate = 115200          
+ComPort.bytesize = 8            
+ComPort.parity   = 'N'           
+ComPort.stopbits = 1
+random_data = np.arange(50)
+
+
+
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -80,13 +96,20 @@ class second_window(QWidget):
         
         layout.addWidget(self.pb_num1)
         self.setLayout(layout)
-   
+
     def clickMethod(self):
       #  while 1:
-         print("type")
-         time.sleep(0.5)
-         data = [random.random() for i in range(axis)]
-         data1 = [random.random() for i in range(axis)]
+         for i in range(0,50,1):
+          random_data[i] = int(ComPort.readline())  
+          result = pd.DataFrame({'data': random_data} )
+         
+         print("ok")
+         #time.sleep(0.5)
+        
+         #data = [random.random() for i in range(axis)]
+         #data1 = [random.random() for i in range(axis)]
+         data1=result
+         data=result
          self.figure.clear()
          self.figure1.clear()
         
