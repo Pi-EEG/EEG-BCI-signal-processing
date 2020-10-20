@@ -29,9 +29,6 @@ random_data = np.arange(50)
 
 
 
-
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -68,7 +65,13 @@ class second_window(QWidget):
        # self.toolbar = NavigationToolbar(self.canvas, self)
        # self.toolbar1 = NavigationToolbar(self.canvas1, self)
         
-        pybutton = QPushButton('graph', self)        
+        pybutton = QPushButton('graph', self)
+
+        
+        global axis_x
+        axis_x=0
+
+
         pybutton.clicked.connect(self.clickMethod)
         pybutton.move(350, 10)
         pybutton.resize(100,32)
@@ -96,7 +99,8 @@ class second_window(QWidget):
         
         layout.addWidget(self.pb_num1)
         self.setLayout(layout)
-
+    
+ 
     def clickMethod(self):
       #  while 1:
          for i in range(0,50,1):
@@ -116,13 +120,21 @@ class second_window(QWidget):
          ax = self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
         
-         ax.plot(data, '*-')
+         #ax.plot(data, '*-')
+         
+         
+        
+      #   ax.axis([0, 2000, 0, 20000])
+         global axis_x
+         ax.plot(range(axis_x, axis_x+50,1),data,color = '#0a0b0c') 
+         ax.axis([axis_x, axis_x+500, 0, 10000])  # 
+         axis_x=axis_x+50
          ax1.plot(data1, '*-')
+         
          self.canvas.draw()
          self.canvas1.draw()
 
-    #     z=self.clickMethod 
-    #     thread = threading.Thread(target=clickMethod(self))
+
          thread=threading.Thread(target=self.clickMethod, args=())
          thread.start()                
 # input data
