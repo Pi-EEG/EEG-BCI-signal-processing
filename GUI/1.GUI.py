@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize    
-
 from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -12,13 +11,16 @@ from PyQt5.Qt import *
 import random
 import threading 
 import time
-
-
 import numpy as np
 import pandas as pd
 from scipy import signal
 import serial
 
+import passfilter 
+
+fps=fs = 10     # sample rate, Hz
+cutoffs = 2
+cutoff=2
 
 ComPort = serial.Serial('COM5') 
 ComPort.baudrate = 115200          
@@ -108,28 +110,33 @@ class second_window(QWidget):
         #   print((ComPort.readline()))
            random_data[i] = int(ComPort.readline())
            
+          result = pd.DataFrame({'data': random_data} )
+          print ("before", result)
+          result = passfilter.butter_highpass_filter(result.data, cutoff, fps)
+          print ("after", result)
           
-           result = pd.DataFrame({'data': random_data} )
+          result = pd.DataFrame({'data': result} )
+          print ("wait")
+          result['data']=result['data'].astype('int')
+        
+          print (result)
+          result  =  passfilter.butter_lowpass_filter(result.data, cutoffs, fps)  
+         # print (result)
+           
          except ValueError:
           print ("ValueError")
             
-             
-        
-         #time.sleep(0.5)
-        
+                        
          #data = [random.random() for i in range(axis)]
          #data1 = [random.random() for i in range(axis)]
         # print (result)
-         data1=result["data"]
-         data=result["data"]
+        # data1=result["data"]
 
+         data=result
          bias= data.sum()/50
-
-
-         
+       
          #self.figure.clear()
          #self.figure1.clear()
-
         
          ax = self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
@@ -148,8 +155,7 @@ class second_window(QWidget):
          ax1.axis([axis_x-500, axis_x+500, bias-5000, bias+5000])  #
          
          axis_x=axis_x+50        
-         
-         
+                  
          self.canvas.draw()
          self.canvas1.draw()
 
