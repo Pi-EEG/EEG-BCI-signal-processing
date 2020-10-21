@@ -20,7 +20,7 @@ from scipy import signal
 import serial
 
 
-ComPort = serial.Serial('COM8') 
+ComPort = serial.Serial('COM5') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
@@ -103,19 +103,33 @@ class second_window(QWidget):
  
     def clickMethod(self):
       #  while 1:
-         for i in range(0,50,1):
-          random_data[i] = int(ComPort.readline())  
-          result = pd.DataFrame({'data': random_data} )
-         
-         print("ok")
+         try:
+          for i in range(0,50,1):
+        #   print((ComPort.readline()))
+           random_data[i] = int(ComPort.readline())
+           
+          
+           result = pd.DataFrame({'data': random_data} )
+         except ValueError:
+          print ("ValueError")
+            
+             
+        
          #time.sleep(0.5)
         
          #data = [random.random() for i in range(axis)]
          #data1 = [random.random() for i in range(axis)]
-         data1=result
-         data=result
-         self.figure.clear()
-         self.figure1.clear()
+        # print (result)
+         data1=result["data"]
+         data=result["data"]
+
+         bias= data.sum()/50
+
+
+         
+         #self.figure.clear()
+         #self.figure1.clear()
+
         
          ax = self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
@@ -124,16 +138,20 @@ class second_window(QWidget):
          
          
         
-      #   ax.axis([0, 2000, 0, 20000])
+         #ax.axis([0, 2000, 0, 20000])
          global axis_x
+
          ax.plot(range(axis_x, axis_x+50,1),data,color = '#0a0b0c') 
-         ax.axis([axis_x, axis_x+500, 0, 10000])  # 
-         axis_x=axis_x+50
-         ax1.plot(data1, '*-')
+         ax.axis([axis_x-500, axis_x+500, bias-1500, bias+1500])  #
+         
+         ax1.plot(range(axis_x, axis_x+50,1),data) 
+         ax1.axis([axis_x-500, axis_x+500, bias-5000, bias+5000])  #
+         
+         axis_x=axis_x+50        
+         
          
          self.canvas.draw()
          self.canvas1.draw()
-
 
          thread=threading.Thread(target=self.clickMethod, args=())
          thread.start()                
