@@ -15,12 +15,8 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 import serial
-
 import passfilter 
 
-fps=fs = 10     # sample rate, Hz
-cutoffs = 2
-cutoff=2
 
 ComPort = serial.Serial('COM5') 
 ComPort.baudrate = 115200          
@@ -110,23 +106,17 @@ class second_window(QWidget):
         #   print((ComPort.readline()))
            random_data[i] = int(ComPort.readline())
            
-          result = pd.DataFrame({'data': random_data} )
-          print ("before", result)
-          result = passfilter.butter_highpass_filter(result.data, cutoff, fps)
-          print ("after", result)
-          
-          result = pd.DataFrame({'data': result} )
-          print ("wait")
-          result['data']=result['data'].astype('int')
-        
-          print (result)
-          result  =  passfilter.butter_lowpass_filter(result.data, cutoffs, fps)  
-         # print (result)
+          result = pd.DataFrame({'data': random_data} )          
+          result = passfilter.butter_highpass_filter(result.data)                  
+          result = pd.DataFrame({'data': result} )          
+          result['data']=result['data'].astype('int')        
+         #print (result)
+          result  =  passfilter.butter_lowpass_filter(result.data)  
+         #print (result)
            
          except ValueError:
           print ("ValueError")
-            
-                        
+                                
          #data = [random.random() for i in range(axis)]
          #data1 = [random.random() for i in range(axis)]
         # print (result)
@@ -141,10 +131,7 @@ class second_window(QWidget):
          ax = self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
         
-         #ax.plot(data, '*-')
-         
-         
-        
+         #ax.plot(data, '*-')                         
          #ax.axis([0, 2000, 0, 20000])
          global axis_x
 
