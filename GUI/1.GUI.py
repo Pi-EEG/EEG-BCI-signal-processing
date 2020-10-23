@@ -24,10 +24,10 @@ ComPort.parity   = 'N'
 ComPort.stopbits = 1
 random_data = np.arange(50)
 
-#global fs
-#fs = 50     
+global fs
+fs = 50     
 global cutoff
-cutoff = 2
+cutoff = 1
 global cutoffs
 cutoffs = 10
 class MainWindow(QMainWindow):
@@ -118,7 +118,7 @@ class second_window(QWidget):
         self.le_num3.setFixedSize(50, 20) # size                        
         self.pb_num3 = QPushButton('LPF')
         self.pb_num3.setFixedSize(50, 60) # size
-        self.pb_num3.clicked.connect(self.show_dialog_num2)     
+        self.pb_num3.clicked.connect(self.show_dialog_num3)     
         layout.addWidget(self.le_num3)       
         self.pb_num1.move(190, 100)        
         layout.addWidget(self.pb_num3)
@@ -135,8 +135,8 @@ class second_window(QWidget):
 
           t1 = time.perf_counter() - t0
     #      print ("t1", t1)
-          global fs
-          fs = int (50/t1)
+        #  global fs
+         # fs = int (50/t1)
          # print (fps)
           
           result_raw = pd.DataFrame({'data': random_data} )          
@@ -207,9 +207,9 @@ class second_window(QWidget):
         print (fs)
     def show_dialog_num3(self):
         value, r = QInputDialog.getInt(self, 'Input dialog', 'LPF:')
-        global fs
-        fs = value
-        print (fs)
+        global cutoffs
+        cutoffs = value
+        print (cutoffs)
         
        # thread.start()
        # mainWin.show()
