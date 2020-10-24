@@ -25,7 +25,8 @@ ComPort.stopbits = 1
 random_data = np.arange(50)
 
 global fs
-fs = 50     
+fs = 50   # Частота дискретизации или частота дискретизации, F S , представляет собой среднее число образцов , полученных в одну секунду ( выборок в секунду ),
+
 global cutoff
 cutoff = 1
 global cutoffs
