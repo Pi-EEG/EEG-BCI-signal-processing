@@ -36,7 +36,7 @@ cutoff=2
 figure, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
 axis_x=0
 
-first_data=11
+
 sines=receive_data()
 sine = pd.DataFrame({'data0': sines} )
 sine ['data1'] = sine
@@ -53,22 +53,15 @@ while 1:
    print (zarem)
   else:
    zarem =  sine ['data'+str(a)].append(sine ['data'+str(a-1)])
-
   
-#df1.append(df2)
-
-  
-# stop
-  
+# stop  
   filtered_sine  =  butter_lowpass_filter(zarem.data, cutoffs, fps) 
 # ax1.plot(range(axis_x, axis_x+50,1),sine,color = '#0a0b0c') 
-  ax2.plot(range(axis_x, axis_x+50,1),filtered_sine[:50], color = '#0a0b0c')
+  ax2.plot(range(axis_x, axis_x+51,1),filtered_sine[49:], color = '#0a0b0c')
   axis_x1_move = 1000 #sine["data"]
 # ax1.axis([axis_x-400, axis_x+200, axis_x1_move[48]-200000, axis_x1_move[48]+200000])
   ax2.axis([axis_x-200, axis_x+200, filtered_sine[48]-5000, filtered_sine[48]+5000]) 
   axis_x=axis_x+50
-
- 
   plt.pause(0.001)
   plt.draw()
 #  plt.show()
