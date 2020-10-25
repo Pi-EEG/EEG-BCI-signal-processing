@@ -62,7 +62,7 @@ while 1:
   
   filtered_sine  =  butter_lowpass_filter(zarem.data, cutoffs, fps) 
 # ax1.plot(range(axis_x, axis_x+50,1),sine,color = '#0a0b0c') 
-  ax2.plot(range(axis_x, axis_x+100,1),filtered_sine, color = '#0a0b0c')
+  ax2.plot(range(axis_x, axis_x+50,1),filtered_sine[:50], color = '#0a0b0c')
   axis_x1_move = 1000 #sine["data"]
 # ax1.axis([axis_x-400, axis_x+200, axis_x1_move[48]-200000, axis_x1_move[48]+200000])
   ax2.axis([axis_x-200, axis_x+200, filtered_sine[48]-5000, filtered_sine[48]+5000]) 
