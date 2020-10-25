@@ -47,22 +47,22 @@ while 1:
   sines1 = pd.DataFrame({'data'+str(a): sines} )
   sine ['data'+str(a)] = sines1
 
-# здесь добавить конец одног остолбца в начало другого и все
+# ok 
   if a==0:
    zarem =  sine ['data'+str(a)].append(sine ['data'+str(a+1)])
    print (zarem)
   else:
    zarem =  sine ['data'+str(a)].append(sine ['data'+str(a-1)])
 
-
+  
 #df1.append(df2)
 
   
 # stop
   
-  filtered_sine  =  butter_lowpass_filter(sine.data1, cutoffs, fps) 
+  filtered_sine  =  butter_lowpass_filter(zarem.data, cutoffs, fps) 
 # ax1.plot(range(axis_x, axis_x+50,1),sine,color = '#0a0b0c') 
-  ax2.plot(range(axis_x, axis_x+50,1),filtered_sine, color = '#0a0b0c')
+  ax2.plot(range(axis_x, axis_x+100,1),filtered_sine, color = '#0a0b0c')
   axis_x1_move = 1000 #sine["data"]
 # ax1.axis([axis_x-400, axis_x+200, axis_x1_move[48]-200000, axis_x1_move[48]+200000])
   ax2.axis([axis_x-200, axis_x+200, filtered_sine[48]-5000, filtered_sine[48]+5000]) 
@@ -71,4 +71,4 @@ while 1:
  
   plt.pause(0.001)
   plt.draw()
-  plt.show()
+#  plt.show()
