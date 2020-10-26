@@ -17,15 +17,15 @@ from scipy import signal
 import serial
 import passfilter 
 
-ComPort = serial.Serial('COM5') 
+ComPort = serial.Serial('COM8') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
 ComPort.stopbits = 1
-random_data = np.arange(150)
+random_data = np.arange(50)
 
 def receive_data():
- for i in range(0,150,1):
+ for i in range(0,50,1):
   random_data[i] = int(ComPort.readline())
  return random_data
 
@@ -142,20 +142,20 @@ class second_window(QWidget):
          for a in range (0,2,1):  
           try:
            t0 = time.perf_counter()            
-           for i in range(0,150,1):
+           for i in range(0,50,1):
             random_data[i] = int(ComPort.readline())
   
            t1 = time.perf_counter() - t0
            global fs
-           fs = int (150/t1)
+           fs = int (50/t1)
 
            sines1 = pd.DataFrame({'data'+str(a): random_data} )
            sine ['data'+str(a)] = sines1
 
            if a==0:
-            zarem =  sine ['data'+str(a)].append(sine ['data'+str(a+1)])
+            zarem =  sine ['data'+str(a+1)].append(sine ['data'+str(a)])
            else:
-            zarem =  sine ['data'+str(a)].append(sine ['data'+str(a-1)])
+            zarem =  sine ['data'+str(a-1)].append(sine ['data'+str(a)])
            print ("ok0")  
            result_raw = pd.DataFrame({'data': zarem} )
            #print ("zarem", result_raw)
@@ -173,8 +173,10 @@ class second_window(QWidget):
                                 
          print ("ok5")  
          data=result_band
+         datas =  result_low
          print ("ok6") 
-         bias= data.sum()/150
+         bias= data.sum()/50
+         biasus=datas.sum()/50
          print ("ok7") 
         
          ax = self.figure.add_subplot(111)
@@ -187,22 +189,22 @@ class second_window(QWidget):
          global axis_x
          print ("ok8.5")
          #Raw_data
-         ax.plot(range(axis_x, axis_x+151,1),result_raw[149:],color = '#0a0b0c')         
+         ax.plot(range(axis_x, axis_x+51,1),result_raw[49:],color = '#0a0b0c')         
          print ("ok10")
-         ax.axis([axis_x-500, axis_x+500, bias-2000, bias+2000])  #
+         ax.axis([axis_x-1500, axis_x+500, biasus-2000000, biasus+2000000])  #
          print ("ok11")
          #High-pass-filter
          
-         ax1.plot(range(axis_x, axis_x+151,1),result_high[149:],color = 'b') 
-         ax1.axis([axis_x-500, axis_x+500, bias-5000, bias+5000])  #
+         ax1.plot(range(axis_x, axis_x+51,1),result_high[49:],color = 'b') 
+         ax1.axis([axis_x-1500, axis_x+500, bias-20000, bias+20000])  #
          #Low-pass-filter 
-         ax2.plot(range(axis_x, axis_x+151,1),result_low[149:],color = 'y') 
-         ax2.axis([axis_x-500, axis_x+500, bias-2000, bias+2000])
+         ax2.plot(range(axis_x, axis_x+51,1),result_low[49:],color = 'y') 
+         ax2.axis([axis_x-1500, axis_x+500, biasus-20000, biasus+2000])
          #Band_pass_filter
-         ax3.plot(range(axis_x, axis_x+151,1),result_band[149:],color = 'g') 
-         ax3.axis([axis_x-500, axis_x+500, bias-2000, bias+2000]) 
+         ax3.plot(range(axis_x, axis_x+51,1),result_band[49:],color = 'g') 
+         ax3.axis([axis_x-1500, axis_x+500, bias-10000, bias+10000]) 
          
-         axis_x=axis_x+150        
+         axis_x=axis_x+50        
                   
          self.canvas.draw()
          self.canvas1.draw()
