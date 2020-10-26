@@ -53,7 +53,7 @@ while 1:
    print (zarem)
   else:
    zarem =  sine ['data'+str(a)].append(sine ['data'+str(a-1)])
-  
+  zarem = pd.DataFrame({'data': zarem} )
 # stop  
   filtered_sine  =  butter_lowpass_filter(zarem.data, cutoffs, fps) 
 # ax1.plot(range(axis_x, axis_x+50,1),sine,color = '#0a0b0c') 
