@@ -17,31 +17,31 @@ from scipy import signal
 import serial
 import passfilter 
 
-ComPort = serial.Serial('COM8') 
+ComPort = serial.Serial('COM5') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
 ComPort.stopbits = 1
-random_data = np.arange(50)
 
+global sample_len
+sample_len=50
+
+random_data = np.arange(sample_len)
 def receive_data():
- for i in range(0,50,1):
+ for i in range(0,sample_len,1):
   random_data[i] = int(ComPort.readline())
  return random_data
-
 
 sines=receive_data()
 sine = pd.DataFrame({'data0': sines} )
 sine ['data1'] = sine
 
-
-
-
- 
 global cutoff
 cutoff = 1
 global cutoffs
 cutoffs = 10
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -67,7 +67,6 @@ class second_window(QWidget):
         self.setMinimumSize(QSize(600, 500))    
         self.setWindowTitle("Iron_BCI") 
               
-
         self.figure = plt.figure(figsize=(0,2,),facecolor='y',  edgecolor='r') #  color only     
         self.figure1 = plt.figure(figsize=(0,2),facecolor='y') # color only
         self.figure2 = plt.figure(figsize=(0,2),facecolor='y')
@@ -84,14 +83,12 @@ class second_window(QWidget):
        # self.toolbar = NavigationToolbar(self.canvas, self)
        # self.toolbar1 = NavigationToolbar(self.canvas1, self)
         
-        pybutton = QPushButton('graph', self)
-
-        
+        pybutton = QPushButton('graph', self)        
         global axis_x
         axis_x=0
 
         pybutton.clicked.connect(self.clickMethod)
-        pybutton.move(350, 10)
+        pybutton.move(450, 10)
         pybutton.resize(100,32)
         
         layout = QVBoxLayout()
@@ -104,36 +101,39 @@ class second_window(QWidget):
         layout.addWidget(self.canvas2)  # background
         layout.addWidget(self.canvas3)
        # input dataufoff value  
-        self.le_num1 = QLineEdit()
-        self.le_num1.setFixedSize(50, 20) # size                        
-        self.pb_num1 = QPushButton('HPS')
-        self.pb_num1.setFixedSize(50, 60) # size
-        self.pb_num1.clicked.connect(self.show_dialog_num1)
-        layout.addWidget(self.le_num1)       
-        self.pb_num1.move(10, 0)        
-        layout.addWidget(self.pb_num1)
-        self.setLayout(layout)
+        le_num1 = QLineEdit(self)
+        le_num1.setFixedSize(60, 20) # size
+        le_num1.move(230,10)  
+        pb_num1 = QPushButton('HPS',self)
+        pb_num1.setFixedSize(50, 60) # size
+        pb_num1.clicked.connect(self.show_dialog_num1)
+        #layout.addWidget(self.le_num1)       
+        pb_num1.move(280, 10)        
+       # layout.addWidget(self.pb_num1)
+      #  self.setLayout(layout)
         # stop input data
+        
         # start input data fps
-        self.le_num2 = QLineEdit()
-        self.le_num2.setFixedSize(50, 20) # size                        
-        self.pb_num2 = QPushButton('fs')
-        self.pb_num2.setFixedSize(50, 60) # size
-        self.pb_num2.clicked.connect(self.show_dialog_num2)
-        layout.addWidget(self.le_num2)       
-        self.pb_num1.move(90, 100)        
-        layout.addWidget(self.pb_num2)
-        self.setLayout(layout)
+        le_num2 = QLineEdit(self)
+        le_num2.setFixedSize(50, 20) # size
+        le_num2.move(120, 10) 
+        pb_num2 = QPushButton('fs',self)
+        pb_num2.setFixedSize(50, 60) # size
+        pb_num2.clicked.connect(self.show_dialog_num2)       
+        pb_num2.move(170, 10)        
         # stop input data fps
-        # start input data low filter
-        self.le_num3 = QLineEdit()
-        self.le_num3.setFixedSize(50, 20) # size                        
-        self.pb_num3 = QPushButton('LPF')
-        self.pb_num3.setFixedSize(50, 60) # size
-        self.pb_num3.clicked.connect(self.show_dialog_num3)     
-        layout.addWidget(self.le_num3)       
-        self.pb_num1.move(190, 100)        
-        layout.addWidget(self.pb_num3)
+        
+        # start input data low filter        
+               
+        pb_num3 = QPushButton('LPF',self)       
+        pb_num3.setFixedSize(50, 60)
+        pb_num3.move(60, 10)       
+        pb_num3.clicked.connect(self.show_dialog_num3)
+        le_num3=QLineEdit(str(cutoffs), self)
+        le_num3.move(10, 10)                 
+        le_num3.setFixedSize(50, 20)              
+        #layout.addWidget(self.le_num3)       
+        #layout.addWidget(pb_num3)
         self.setLayout(layout)
         # stop input data filter
     
@@ -142,87 +142,86 @@ class second_window(QWidget):
          for a in range (0,2,1):  
           try:
            t0 = time.perf_counter()            
-           for i in range(0,50,1):
+           for i in range(0,sample_len,1):
             random_data[i] = int(ComPort.readline())
   
            t1 = time.perf_counter() - t0
            global fs
-           fs = int (50/t1)
+           fs = int (sample_len/t1)
 
-           sines1 = pd.DataFrame({'data'+str(a): random_data} )
-           sine ['data'+str(a)] = sines1
+          # sines1 = pd.DataFrame({'data'+str(a): random_data} )
+           sine ['data'+str(a)] = random_data
 
            if a==0:
             zarem =  sine ['data'+str(a+1)].append(sine ['data'+str(a)])
-           else:
+           if a==1:
             zarem =  sine ['data'+str(a-1)].append(sine ['data'+str(a)])
-           print ("ok0")  
-           result_raw = pd.DataFrame({'data': zarem} )
+         
+           result_raw = pd.DataFrame({'data': zarem})
            #print ("zarem", result_raw)
            result_high = passfilter.butter_highpass_filter(result_raw.data,cutoff, fs)
-           print ("ok1")
-           result_low  =  passfilter.butter_lowpass_filter(result_raw.data,cutoffs, fs)
-           print ("ok2")           
+           result_low  =  passfilter.butter_lowpass_filter(result_raw.data,cutoffs, fs)        
            result_band = pd.DataFrame({'data': result_high} )
-           print ("ok3")
            result_band  =  passfilter.butter_lowpass_filter(result_band.data,cutoffs, fs)  
          #print (result)
-           print ("ok4")
           except ValueError:
            print ("ValueError")
-                                
-         print ("ok5")  
+                                  
+         data=result_raw
+         bias_result_raw= int(data.sum()/sample_len)
+
+         print ("oki1")
+         data=result_high
+         bias_result_high= int(data.sum()/sample_len)
+
+         data=result_low
+         bias_result_low= int(data.sum()/sample_len)
+                 
          data=result_band
-         datas =  result_low
-         print ("ok6") 
-         bias= data.sum()/50
-         biasus=datas.sum()/50
-         print ("ok7") 
-        
+         bias_result_band= int(data.sum()/sample_len)
+         print ("oki2")
          ax = self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
          ax2 = self.figure2.add_subplot(111)
          ax3 = self.figure3.add_subplot(111)
-         print ("ok8")
+         
          #ax.plot(data, '*-')                         
          #ax.axis([0, 2000, 0, 20000])
+         print ("oki3")
          global axis_x
-         print ("ok8.5")
          #Raw_data
-         ax.plot(range(axis_x, axis_x+51,1),result_raw[49:],color = '#0a0b0c')         
-         print ("ok10")
-         ax.axis([axis_x-1500, axis_x+500, biasus-2000000, biasus+2000000])  #
-         print ("ok11")
-         #High-pass-filter
-         
-         ax1.plot(range(axis_x, axis_x+51,1),result_high[49:],color = 'b') 
-         ax1.axis([axis_x-1500, axis_x+500, bias-20000, bias+20000])  #
+         ax.plot(range(axis_x, axis_x+sample_len,1),result_raw[sample_len:],color = '#0a0b0c')
+         print ("oki4")
+         ax.axis([axis_x-5000, axis_x+500, bias_result_raw-2000, bias_result_raw+2000])  #
+         print ("oki5")
+         #High-pass-filter       
+         ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[sample_len:],color = 'b') 
+         ax1.axis([axis_x-5000, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
          #Low-pass-filter 
-         ax2.plot(range(axis_x, axis_x+51,1),result_low[49:],color = 'y') 
-         ax2.axis([axis_x-1500, axis_x+500, biasus-20000, biasus+2000])
+         ax2.plot(range(axis_x, axis_x+sample_len,1),result_low[sample_len:],color = 'y') 
+         ax2.axis([axis_x-5000, axis_x+500, bias_result_low-2000, bias_result_low+2000])
          #Band_pass_filter
-         ax3.plot(range(axis_x, axis_x+51,1),result_band[49:],color = 'g') 
-         ax3.axis([axis_x-1500, axis_x+500, bias-10000, bias+10000]) 
+         ax3.plot(range(axis_x, axis_x+sample_len+1,1),result_band[sample_len-1:],color = 'g') 
+         ax3.axis([axis_x-5000, axis_x+500, bias_result_band-2000, bias_result_band+2000]) 
          
-         axis_x=axis_x+50        
-                  
+         axis_x=axis_x+sample_len                        
          self.canvas.draw()
          self.canvas1.draw()
          self.canvas2.draw()
          self.canvas3.draw()
-         
-         
+                 
          thread=threading.Thread(target=self.clickMethod, args=())
          thread.start()                
 # input data
     def show_dialog_num1(self):
         value, r = QInputDialog.getInt(self, 'Input dialog', 'HPS:')
         global cutoff
-        cutoff = value
+        cutoff = value/10
         print (cutoff)
     def show_dialog_num2(self):
         value, r = QInputDialog.getInt(self, 'Input dialog', 'fs:')
         global fs
+
         fs = value
         print (fs)
     def show_dialog_num3(self):
@@ -235,6 +234,5 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
-    seconWin = second_window()
-       
+    seconWin = second_window()       
     sys.exit( app.exec_() )
