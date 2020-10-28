@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 import serial
 import time
 
-#fs = 10     
-#cutoffs = 2
-#cutoff=2
+# sosfiltfilt, sosfiltfilt, lfilter_zi, lfilter, lfiltic, savgol_filter, sosfilt
 
 def butter_highpass(cutoff, fs, order=4):
     nyq = 0.5 * fs
