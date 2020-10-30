@@ -24,7 +24,7 @@ ComPort.parity   = 'N'
 ComPort.stopbits = 1
 
 global sample_len
-sample_len=50
+sample_len=100
 
 random_data = np.arange(sample_len)
 def receive_data():
@@ -33,9 +33,13 @@ def receive_data():
  return random_data
 
 sines=receive_data()
-sine = pd.DataFrame({'data0': sines} )
-sine ['data1'] = sine
-
+sine = pd.DataFrame({'data': sines} )
+z=sine.values
+sine ['data0'] = sine
+sine ['data1'] = z
+sine ['data2'] = z
+sine ['data3'] = z
+print (sine)
 global cutoff
 cutoff = 1
 global cutoffs
@@ -108,7 +112,7 @@ class second_window(QWidget):
         pb_num1.setFixedSize(50, 60) # size
         pb_num1.clicked.connect(self.show_dialog_num1)
         #layout.addWidget(self.le_num1)       
-        pb_num1.move(280, 10)        
+        pb_num1.move(290, 10)        
        # layout.addWidget(self.pb_num1)
       #  self.setLayout(layout)
         # stop input data
@@ -148,63 +152,98 @@ class second_window(QWidget):
            t1 = time.perf_counter() - t0
            global fs
            fs = int (sample_len/t1)
-
           # sines1 = pd.DataFrame({'data'+str(a): random_data} )
            sine ['data'+str(a)] = random_data
 
+           #sine ['data0'] = None
+           #sine ['data1'] = None
+           #sine ['data2'] = None
+           #sine ['data3'] = None
+           #sine ['data'] = None
+
+
            if a==0:
-            zarem =  sine ['data'+str(a+1)].append(sine ['data'+str(a)])
+            z = np.append(sine ['data'], (sine ['data1']))            
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data0']))
+                               
+            print ("z",len(z))
+            
+            ##zarem =  sine ['data'].append(sine ['data2'])
+            #zarem =  sine ['data'].append(sine ['data3'])
+            #zarem =  sine ['data'].append(sine ['data0'])
+            
            if a==1:
-            zarem =  sine ['data'+str(a-1)].append(sine ['data'+str(a)])
-         
-           result_raw = pd.DataFrame({'data': zarem})
-           #print ("zarem", result_raw)
-           result_high = passfilter.butter_highpass_filter(result_raw.data,cutoff, fs)
-           result_low  =  passfilter.butter_lowpass_filter(result_raw.data,cutoffs, fs)        
-           result_band = pd.DataFrame({'data': result_high} )
-           result_band  =  passfilter.butter_lowpass_filter(result_band.data,cutoffs, fs)  
+            z = np.append(sine ['data'], (sine ['data2']))            
+            z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+
+           if a==2:
+
+            z = np.append(sine ['data'], (sine ['data3']))            
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            
+           if a==3:
+
+            z = np.append(sine ['data'], (sine ['data0']))            
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            
+            
+          
+           result_raw = pd.DataFrame({'data': z})
+           print ("z", len(z))
+          # print ("result_raw",result_raw)
+ 
+           result_high  = passfilter.butter_highpass_filter(result_raw.data,cutoff, fs)
+           result_low   = passfilter.butter_lowpass_filter(result_raw.data,cutoffs, fs)
+           result_band  = passfilter.butter_bandpass_filter(result_raw.data, cutoff, cutoffs, fs)
          #print (result)
           except ValueError:
            print ("ValueError")
                                   
          data=result_raw
          bias_result_raw= int(data.sum()/sample_len)
-
-         print ("oki1")
          data=result_high
          bias_result_high= int(data.sum()/sample_len)
-
          data=result_low
-         bias_result_low= int(data.sum()/sample_len)
-                 
+         bias_result_low= int(data.sum()/sample_len)                 
          data=result_band
          bias_result_band= int(data.sum()/sample_len)
-         print ("oki2")
-         ax = self.figure.add_subplot(111)
+         ax =  self.figure.add_subplot(111)
          ax1 = self.figure1.add_subplot(111)
          ax2 = self.figure2.add_subplot(111)
          ax3 = self.figure3.add_subplot(111)
-         
          #ax.plot(data, '*-')                         
          #ax.axis([0, 2000, 0, 20000])
-         print ("oki3")
          global axis_x
          #Raw_data
-         ax.plot(range(axis_x, axis_x+sample_len,1),result_raw[sample_len:],color = '#0a0b0c')
-         print ("oki4")
-         ax.axis([axis_x-5000, axis_x+500, bias_result_raw-2000, bias_result_raw+2000])  #
-         print ("oki5")
+         #print ("result_raw",result_raw[:sample_len])
+         ax.plot(range(axis_x, axis_x+sample_len,1),result_raw[-sample_len:],color = '#0a0b0c')
+         ax.axis([axis_x-500, axis_x+500, bias_result_raw-2000, bias_result_raw+2000])  #
          #High-pass-filter       
-         ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[sample_len:],color = 'b') 
-         ax1.axis([axis_x-5000, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
+         ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[-sample_len:],color = 'b') 
+         ax1.axis([axis_x-500, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
          #Low-pass-filter 
-         ax2.plot(range(axis_x, axis_x+sample_len,1),result_low[sample_len:],color = 'y') 
-         ax2.axis([axis_x-5000, axis_x+500, bias_result_low-2000, bias_result_low+2000])
+         ax2.plot(range(axis_x, axis_x+sample_len,1),result_low[-sample_len:],color = 'y') 
+         ax2.axis([axis_x-500, axis_x+500, bias_result_low-2000, bias_result_low+2000])
          #Band_pass_filter
-         ax3.plot(range(axis_x, axis_x+sample_len+1,1),result_band[sample_len-1:],color = 'g') 
-         ax3.axis([axis_x-5000, axis_x+500, bias_result_band-2000, bias_result_band+2000]) 
+       #  print ("res1", len (result_band))
+       #  result_band=result_band[50:]
+       #  print ("re2",  len (result_band))
+       #  result_band=result_band[:-50]
+       #  print ("res",  len (result_band))
          
-         axis_x=axis_x+sample_len                        
+         ax3.plot(range(axis_x, axis_x+sample_len,1),result_band[-sample_len:],color = 'g') 
+         ax3.axis([axis_x-500, axis_x+500, bias_result_band-2000, bias_result_band+2000]) 
+         
+         axis_x=axis_x+sample_len
+         
          self.canvas.draw()
          self.canvas1.draw()
          self.canvas2.draw()
@@ -221,7 +260,6 @@ class second_window(QWidget):
     def show_dialog_num2(self):
         value, r = QInputDialog.getInt(self, 'Input dialog', 'fs:')
         global fs
-
         fs = value
         print (fs)
     def show_dialog_num3(self):
