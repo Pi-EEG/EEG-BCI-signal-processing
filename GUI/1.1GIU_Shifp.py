@@ -1,3 +1,4 @@
+# sart printer here 
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
@@ -17,14 +18,14 @@ from scipy import signal
 import serial
 import passfilter 
 
-ComPort = serial.Serial('COM5') 
+ComPort = serial.Serial('COM8') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
 ComPort.stopbits = 1
 
 global sample_len
-sample_len=100
+sample_len=200
 
 random_data = np.arange(sample_len)
 def receive_data():
@@ -142,62 +143,59 @@ class second_window(QWidget):
         # stop input data filter
     
     def clickMethod(self):
-
-         for a in range (0,2,1):  
+         for a in range (0,4,1):  
           try:
            t0 = time.perf_counter()            
-           for i in range(0,sample_len,1):
+           for i in range(0,sample_len,1):  
             random_data[i] = int(ComPort.readline())
-  
            t1 = time.perf_counter() - t0
            global fs
            fs = int (sample_len/t1)
-          # sines1 = pd.DataFrame({'data'+str(a): random_data} )
+          #sines1 = pd.DataFrame({'data'+str(a): random_data} )
            sine ['data'+str(a)] = random_data
-
+           print ("a",a)
+           print ("sine", sine)
            #sine ['data0'] = None
            #sine ['data1'] = None
            #sine ['data2'] = None
            #sine ['data3'] = None
            #sine ['data'] = None
 
-
            if a==0:
             z = np.append(sine ['data'], (sine ['data1']))            
             z = np.append(z, (sine ['data2']))
             z = np.append(z, (sine ['data3']))
-            z = np.append(z, (sine ['data0']))
-                               
-            print ("z",len(z))
+            z = np.append(z, (sine ['data0']))                            
             
             ##zarem =  sine ['data'].append(sine ['data2'])
             #zarem =  sine ['data'].append(sine ['data3'])
             #zarem =  sine ['data'].append(sine ['data0'])
+
+
             
+           # start printer here 
            if a==1:
             z = np.append(sine ['data'], (sine ['data2']))            
             z = np.append(z, (sine ['data3']))
             z = np.append(z, (sine ['data0']))
             z = np.append(z, (sine ['data1']))
-
            if a==2:
-
             z = np.append(sine ['data'], (sine ['data3']))            
             z = np.append(z, (sine ['data0']))
             z = np.append(z, (sine ['data1']))
-            z = np.append(z, (sine ['data2']))
-            
+            z = np.append(z, (sine ['data2']))            
            if a==3:
-
             z = np.append(sine ['data'], (sine ['data0']))            
             z = np.append(z, (sine ['data1']))
             z = np.append(z, (sine ['data2']))
             z = np.append(z, (sine ['data3']))
             
-            
-          
+    
            result_raw = pd.DataFrame({'data': z})
-           print ("z", len(z))
+           z=0
+           print ("len-z", (type(z)))   
+          # print ("result_raw",len(result_raw))
+           #print ("z", len(z))
           # print ("result_raw",result_raw)
  
            result_high  = passfilter.butter_highpass_filter(result_raw.data,cutoff, fs)
@@ -225,13 +223,13 @@ class second_window(QWidget):
          #Raw_data
          #print ("result_raw",result_raw[:sample_len])
          ax.plot(range(axis_x, axis_x+sample_len,1),result_raw[-sample_len:],color = '#0a0b0c')
-         ax.axis([axis_x-500, axis_x+500, bias_result_raw-2000, bias_result_raw+2000])  #
+         ax.axis([axis_x-500, axis_x+500, bias_result_raw-200000, bias_result_raw+200000])  #
          #High-pass-filter       
          ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[-sample_len:],color = 'b') 
          ax1.axis([axis_x-500, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
          #Low-pass-filter 
          ax2.plot(range(axis_x, axis_x+sample_len,1),result_low[-sample_len:],color = 'y') 
-         ax2.axis([axis_x-500, axis_x+500, bias_result_low-2000, bias_result_low+2000])
+         ax2.axis([axis_x-500, axis_x+500, bias_result_low-200000, bias_result_low+200000])
          #Band_pass_filter
        #  print ("res1", len (result_band))
        #  result_band=result_band[50:]
