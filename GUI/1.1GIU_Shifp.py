@@ -1,4 +1,3 @@
-# sart printer here 
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
@@ -153,8 +152,6 @@ class second_window(QWidget):
            fs = int (sample_len/t1)
           #sines1 = pd.DataFrame({'data'+str(a): random_data} )
            sine ['data'+str(a)] = random_data
-           print ("a",a)
-           print ("sine", sine)
            #sine ['data0'] = None
            #sine ['data1'] = None
            #sine ['data2'] = None
@@ -170,8 +167,6 @@ class second_window(QWidget):
             ##zarem =  sine ['data'].append(sine ['data2'])
             #zarem =  sine ['data'].append(sine ['data3'])
             #zarem =  sine ['data'].append(sine ['data0'])
-
-
             
            # start printer here 
            if a==1:
@@ -189,23 +184,22 @@ class second_window(QWidget):
             z = np.append(z, (sine ['data1']))
             z = np.append(z, (sine ['data2']))
             z = np.append(z, (sine ['data3']))
-            
-    
+                      
            result_raw = pd.DataFrame({'data': z})
-           z=0
-           print ("len-z", (type(z)))   
-          # print ("result_raw",len(result_raw))
-           #print ("z", len(z))
-          # print ("result_raw",result_raw)
- 
-           result_high  = passfilter.butter_highpass_filter(result_raw.data,cutoff, fs)
-           result_low   = passfilter.butter_lowpass_filter(result_raw.data,cutoffs, fs)
+           result_raw = result_raw[sample_len:]
+           print ("result_raw",len(result_raw))
+           
+         
+           result_high  = passfilter.butter_highpass_filter(result_raw.data, cutoff, fs)
+           result_low   = passfilter.butter_lowpass_filter(result_raw.data, cutoffs, fs)
            result_band  = passfilter.butter_bandpass_filter(result_raw.data, cutoff, cutoffs, fs)
+           
          #print (result)
           except ValueError:
            print ("ValueError")
                                   
          data=result_raw
+         #result_raw = 0
          bias_result_raw= int(data.sum()/sample_len)
          data=result_high
          bias_result_high= int(data.sum()/sample_len)
@@ -224,6 +218,8 @@ class second_window(QWidget):
          #print ("result_raw",result_raw[:sample_len])
          ax.plot(range(axis_x, axis_x+sample_len,1),result_raw[-sample_len:],color = '#0a0b0c')
          ax.axis([axis_x-500, axis_x+500, bias_result_raw-200000, bias_result_raw+200000])  #
+         result_raw=0 
+         
          #High-pass-filter       
          ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[-sample_len:],color = 'b') 
          ax1.axis([axis_x-500, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
@@ -246,7 +242,7 @@ class second_window(QWidget):
          self.canvas1.draw()
          self.canvas2.draw()
          self.canvas3.draw()
-                 
+                
          thread=threading.Thread(target=self.clickMethod, args=())
          thread.start()                
 # input data
