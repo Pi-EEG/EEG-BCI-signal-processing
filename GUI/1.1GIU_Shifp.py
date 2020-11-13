@@ -17,14 +17,14 @@ from scipy import signal
 import serial
 import passfilter 
 
-ComPort = serial.Serial('COM8') 
+ComPort = serial.Serial('COM7') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
 ComPort.stopbits = 1
 
 global sample_len
-sample_len=200
+sample_len=25
 
 random_data = np.arange(sample_len)
 def receive_data():
@@ -39,6 +39,10 @@ sine ['data0'] = sine
 sine ['data1'] = z
 sine ['data2'] = z
 sine ['data3'] = z
+sine ['data4'] = z
+sine ['data5'] = z
+sine ['data6'] = z
+sine ['data7'] = z
 print (sine)
 global cutoff
 cutoff = 1
@@ -142,14 +146,12 @@ class second_window(QWidget):
         # stop input data filter
     
     def clickMethod(self):
-         for a in range (0,4,1):  
-          try:
-           t0 = time.perf_counter()            
+         t0 = time.perf_counter() 
+         for a in range (0,8,1):  
+          try:           
            for i in range(0,sample_len,1):  
             random_data[i] = int(ComPort.readline())
-           t1 = time.perf_counter() - t0
-           global fs
-           fs = int (sample_len/t1)
+
           #sines1 = pd.DataFrame({'data'+str(a): random_data} )
            sine ['data'+str(a)] = random_data
            #sine ['data0'] = None
@@ -162,34 +164,90 @@ class second_window(QWidget):
             z = np.append(sine ['data'], (sine ['data1']))            
             z = np.append(z, (sine ['data2']))
             z = np.append(z, (sine ['data3']))
-            z = np.append(z, (sine ['data0']))                            
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))
+            z = np.append(z, (sine ['data0']))
             
-            ##zarem =  sine ['data'].append(sine ['data2'])
-            #zarem =  sine ['data'].append(sine ['data3'])
-            #zarem =  sine ['data'].append(sine ['data0'])
-            
-           # start printer here 
            if a==1:
             z = np.append(sine ['data'], (sine ['data2']))            
             z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))
             z = np.append(z, (sine ['data0']))
             z = np.append(z, (sine ['data1']))
+                      
            if a==2:
             z = np.append(sine ['data'], (sine ['data3']))            
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))
             z = np.append(z, (sine ['data0']))
             z = np.append(z, (sine ['data1']))
-            z = np.append(z, (sine ['data2']))            
+            z = np.append(z, (sine ['data2']))
+                        
            if a==3:
+            z = np.append(sine ['data'], (sine ['data4']))            
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            
+           if a==4:
+            z = np.append(sine ['data'], (sine ['data5']))            
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data4']))
+            
+           if a==5:
+            z = np.append(sine ['data'], (sine ['data6']))            
+            z = np.append(z, (sine ['data7']))
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            
+            
+           if a==6:
+            z = np.append(sine ['data'], (sine ['data7']))            
+            z = np.append(z, (sine ['data0']))
+            z = np.append(z, (sine ['data1']))
+            z = np.append(z, (sine ['data2']))
+            z = np.append(z, (sine ['data3']))
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            
+           if a==7:
             z = np.append(sine ['data'], (sine ['data0']))            
             z = np.append(z, (sine ['data1']))
             z = np.append(z, (sine ['data2']))
             z = np.append(z, (sine ['data3']))
-                      
+            z = np.append(z, (sine ['data4']))
+            z = np.append(z, (sine ['data5']))
+            z = np.append(z, (sine ['data6']))
+            z = np.append(z, (sine ['data7']))           
+
+           t1 = time.perf_counter() - t0
+           global fs
+           fs = int (sample_len/t1)                    
            result_raw = pd.DataFrame({'data': z})
            result_raw = result_raw[sample_len:]
            print ("result_raw",len(result_raw))
            
-         
            result_high  = passfilter.butter_highpass_filter(result_raw.data, cutoff, fs)
            result_low   = passfilter.butter_lowpass_filter(result_raw.data, cutoffs, fs)
            result_band  = passfilter.butter_bandpass_filter(result_raw.data, cutoff, cutoffs, fs)
@@ -222,10 +280,10 @@ class second_window(QWidget):
          
          #High-pass-filter       
          ax1.plot(range(axis_x, axis_x+sample_len,1),result_high[-sample_len:],color = 'b') 
-         ax1.axis([axis_x-500, axis_x+500, bias_result_high-2000, bias_result_high+2000])  #
+         ax1.axis([axis_x-500, axis_x+500, bias_result_high-150, bias_result_high+150])  #
          #Low-pass-filter 
          ax2.plot(range(axis_x, axis_x+sample_len,1),result_low[-sample_len:],color = 'y') 
-         ax2.axis([axis_x-500, axis_x+500, bias_result_low-200000, bias_result_low+200000])
+         ax2.axis([axis_x-500, axis_x+500, bias_result_low-15000, bias_result_low+15000])
          #Band_pass_filter
        #  print ("res1", len (result_band))
        #  result_band=result_band[50:]
@@ -233,8 +291,8 @@ class second_window(QWidget):
        #  result_band=result_band[:-50]
        #  print ("res",  len (result_band))
          
-         ax3.plot(range(axis_x, axis_x+sample_len,1),result_band[-sample_len:],color = 'g') 
-         ax3.axis([axis_x-500, axis_x+500, bias_result_band-2000, bias_result_band+2000]) 
+         ax3.plot(range(axis_x, axis_x+sample_len-1,1),result_band[-sample_len+1:],color = 'g') 
+         ax3.axis([axis_x-500, axis_x+500, bias_result_band-150, bias_result_band+150]) 
          
          axis_x=axis_x+sample_len
          
