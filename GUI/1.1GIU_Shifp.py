@@ -405,6 +405,7 @@ class third_window(QWidget):
 
 
  def receive_data():
+
   t0 = time.perf_counter() 
   for i in range(0,sample_len,1):
    random_data[i] = int(ComPort.readline())
@@ -416,7 +417,7 @@ class third_window(QWidget):
   print ("fas", fas)
   return result
 
- def Furie_start(self):  
+ def Furie_start(self):
   axis_x=0
   fas = 50
   
@@ -433,24 +434,28 @@ class third_window(QWidget):
   frequencies = values/timePeriod  
   print ("ildar5")
   
- 
+
   ax1 = self.figure.add_subplot(111)
   ax1.plot(range(0, sample_len,1),sine,color = '#0a0b0c')
   axis_x1_move=sine
-  ax1.axis([0, sample_len, -1000, + 83886060])    
+  ax1.axis([0, sample_len, np.amax(sine)-1000, np.amax(sine)+1000])  
+  
+  ax2 = self.figure1.add_subplot(111)
+  print ("frequencies", type (frequencies))
+  ax2.plot(frequencies,abs(fourier),color = '#0a0b0c')
+  ax2.axis([0, np.amax(frequencies), 0, np.amax(fourier)])  
+
+ # axis.plot(frequencies, (abs(fourier)))
+ 
   self.canvas.draw()
-
-  ax2 = self.figure.add_subplot(111)
-  ax2.plot(range(0, sample_len,1),sine,color = '#0a0b0c')
-  axis_x2_move=sine
-  ax2.axis([0, sample_len, -1000, + 83886060])    
   self.canvas1.draw()
-
+  ax1.clear()
+  ax2.clear()
+  
  def To_main_menu (self):
   mainWin.show()
   thirdWin.close()           
-           
-        
+                   
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow()
