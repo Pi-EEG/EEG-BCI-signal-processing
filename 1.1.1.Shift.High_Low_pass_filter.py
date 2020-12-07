@@ -4,64 +4,150 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import serial
 import time
-ComPort = serial.Serial('COM8') 
+ComPort = serial.Serial('COM7') 
 ComPort.baudrate = 115200          
 ComPort.bytesize = 8            
 ComPort.parity   = 'N'           
 ComPort.stopbits = 1
-random_data = np.arange(50)
-name_of_dataset = np.arange(2)
+sample_len=100
+random_data = np.arange(sample_len)
 
-def receive_data():
- for i in range(0,50,1):
+def receive_datas():
+ for i in range(0,sample_len,1):
   random_data[i] = int(ComPort.readline())
  return random_data
 
-def butter_lowpass(cutoffs, fs, order=5):
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = signal.butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
+sines=receive_datas()
+sine = pd.DataFrame({'data': sines} )
+zet=sine.values
+sine ['data0'] = sine
+sine ['data1'] = zet
+sine ['data2'] = zet
+sine ['data3'] = zet
+sine ['data4'] = zet
+sine ['data5'] = zet
+sine ['data6'] = zet
+sine ['data7'] = zet
 
-def butter_lowpass_filter(data, cutoffs, fs, order=5):
-    b, a = butter_lowpass(cutoffs, fs, order=order)
+def receive_data(a):
+ t0 = time.perf_counter()
+ for i in range(0,sample_len,1):
+  random_data[i] = int(ComPort.readline())
+ sine ['data'+str(a)] = random_data 
+ if a==0:        
+  z = np.append(sine ['data'], (sine ['data1']))            
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+ if a==1:
+  z = np.append(sine ['data'], (sine ['data2']))            
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))                      
+ if a==2:
+  z = np.append(sine ['data'], (sine ['data3']))            
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))                        
+ if a==3:
+  z = np.append(sine ['data'], (sine ['data4']))            
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))            
+ if a==4:
+  z = np.append(sine ['data'], (sine ['data5']))            
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))            
+ if a==5:
+  z = np.append(sine ['data'], (sine ['data6']))            
+  z = np.append(z, (sine ['data7']))
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))            
+ if a==6:
+  z = np.append(sine ['data'], (sine ['data7']))            
+  z = np.append(z, (sine ['data0']))
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))          
+ if a==7:
+  z = np.append(sine ['data'], (sine ['data0']))            
+  z = np.append(z, (sine ['data1']))
+  z = np.append(z, (sine ['data2']))
+  z = np.append(z, (sine ['data3']))
+  z = np.append(z, (sine ['data4']))
+  z = np.append(z, (sine ['data5']))
+  z = np.append(z, (sine ['data6']))
+  z = np.append(z, (sine ['data7']))   
+
+ t1 = time.perf_counter() - t0
+ t1=t1*8
+ global fps
+ fps = int (sample_len/t1)
+ print ("fps", fps)
+
+ result = pd.DataFrame({'data': z} )
+# result = result[:sample_len]
+ return result
+
+def butter_bandpass(lowcut, highcut, fs, order=3):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = signal.butter(order, [low, high], btype='band')
+    return b, a
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=3):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = signal.lfilter(b, a, data)
     return y
 
-#order = 6
-fps=fs = 10     # sample rate, Hz
-cutoffs = 30
-cutoff=2
-
-figure, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+cutoffs = 2
+cutoff = 1
+figure, (ax) = plt.subplots(1, 1, sharex=True)
 axis_x=0
-
-
-sines=receive_data()
-sine = pd.DataFrame({'data0': sines} )
-sine ['data1'] = sine
-
+a=0
 while 1:
- for a in range (0,2,1):    
-  sines=receive_data() 
-  sines1 = pd.DataFrame({'data'+str(a): sines} )
-  sine ['data'+str(a)] = sines1
+ dataset = receive_data(a)
+ a=a+1
+ if (a == 7):
+  a=0
+ #dataset = dataset[:sample_len]
+ # print ("sine",sine)
 
-# ok 
-  if a==0:
-   zarem =  sine ['data'+str(a)].append(sine ['data'+str(a+1)])
-   print (zarem)
-  else:
-   zarem =  sine ['data'+str(a)].append(sine ['data'+str(a-1)])
-  zarem = pd.DataFrame({'data': zarem} )
-# stop  
-  filtered_sine  =  butter_lowpass_filter(zarem.data, cutoffs, fps) 
-# ax1.plot(range(axis_x, axis_x+50,1),sine,color = '#0a0b0c') 
-  ax2.plot(range(axis_x, axis_x+51,1),filtered_sine[49:], color = '#0a0b0c')
-  axis_x1_move = 1000 #sine["data"]
-# ax1.axis([axis_x-400, axis_x+200, axis_x1_move[48]-200000, axis_x1_move[48]+200000])
-  ax2.axis([axis_x-200, axis_x+200, filtered_sine[48]-5000, filtered_sine[48]+5000]) 
-  axis_x=axis_x+50
-  plt.pause(0.001)
-  plt.draw()
-#  plt.show()
+ filtered_sine = butter_bandpass_filter(dataset.data, cutoff, cutoffs, fps)
+ print ("filtered_sine", len(filtered_sine))
+ filtered_sine = filtered_sine[(sample_len*8):]
+ print ("filtered_sine", len(filtered_sine))
+ ax.plot(range(axis_x, axis_x+sample_len,1),filtered_sine, color = '#0a0b0c')
+ ax.axis([axis_x-499, axis_x+501, filtered_sine[sample_len-1]-500, filtered_sine[sample_len-1]+500]) 
+ axis_x=axis_x+sample_len
+ print ("ok") 
+ plt.pause(0.000001)
+ plt.draw()
